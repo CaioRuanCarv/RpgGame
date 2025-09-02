@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#4ecca3" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<title>Curso Gamificado - RPG do Conhecimento</title>
+<style>
+  :root {
+    --primary: #1e3c72;
+    --secondary: #2a5298;
+    --accent: #4ecca3;
+    --dark: #162447;
+    --light: #eeeeee;
+    --warning: #f0a500;
+    --danger: #b22222;
+    --break: #00cc66;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--light);
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--dark);
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #f0f0f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  main {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: auto;
+  }
+  section {
+    background: rgba(22, 36, 71, 0.85);
+    border-radius: 12px;
+    padding: 1.5rem;
+    flex: 1 1 350px;
+    min-width: 300px;
+    box-shadow: 0 0 15px rgba(15, 26, 58, 0.5);
+    backdrop-filter: blur(10px);
+  }
+  h2 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    color: var(--accent);
+    font-size: 1.5rem;
+  }
+  label {
+    display: block;
+    margin-top: 0.8rem;
+    font-weight: 500;
+  }
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border-radius: 6px;
+    border: 2px solid rgba(78, 204, 163, 0.3);
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+  select option {
+    background: var(--dark);
+    color: var(--light);
+  }
+  button {
+    margin-top: 1rem;
+    background: var(--accent);
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+  button:hover {
+    background: #3ba87f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.7rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    align-items: center;
+  }
+  .stat span {
+    font-weight: bold;
+  }
+  .stat-plus {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid var(--accent);
+    background: var(--dark);
+    color: var(--accent);
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    line-height: 1;
+    user-select: none;
+  }
+  .stat-plus:hover {
+    background: var(--accent);
+    color: var(--dark);
+  }
+  .progress-bar {
+    background: rgba(15, 26, 58, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    height: 20px;
+    margin-top: 0.8rem;
+    border: 2px solid rgba(78, 204, 163, 0.3);
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, var(--accent), #3ba87f);
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease;
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 2s infinite;
+  }
+  .file-input {
+  display: none !important;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+  @keyframes shimmer {
+    0% { transform: translateX(-100%);}
+    100% { transform: translateX(100%);}
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    margin: 1rem 0;
+  }
+  li {
+    background: rgba(31, 42, 72, 0.8);
+    margin-bottom: 0.7rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--accent);
+  }
+  li:hover {
+    transform: translateX(5px);
+    background: rgba(31, 42, 72, 1);
+  }
+  li.completed {
+    background: rgba(42, 77, 63, 0.8);
+    text-decoration: line-through;
+    color: #a0d6b4;
+    border-left-color: #3ba87f;
+  }
+  .small-btn {
+    background: var(--dark);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .small-btn:hover {
+    background: var(--accent);
+    color: var(--dark);
+    transform: scale(1.05);
+  }
+  .reset-btn {
+    background: var(--danger);
+    color: white;
+    margin-top: 1rem;
+  }
+  .reset-btn:hover {
+    background: #d9534f;
+  }
+  #pomodoro-timer {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  #pomodoro-timer.break {
+    color: var(--break);
+  }
+  #pomodoro-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  #pomodoro-controls button {
+    min-width: 100px;
+  }
+  #achievements-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+  }
+  .achievement-item {
+    background: rgba(31, 42, 72, 0.8);
+    margin-bottom: 0.7rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--accent);
+  }
+  .achievement-item.completed {
+    border-left-color: #3ba87f;
+    background: rgba(42, 77, 63, 0.8);
+    color: #a0d6b4;
+  }
+  .achievement-desc {
+    flex: 1;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+  }
+  .achievement-requirement {
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #ccc;
+  }
+  .achievement-rescue-btn {
+    background: var(--dark);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    border-radius: 6px;
+    padding: 0.3rem 0.7rem;
+    font-weight: 900;
+    cursor: pointer;
+    margin-left: 1rem;
+  }
+  .achievement-rescue-btn:hover {
+    background: var(--accent);
+    color: var(--dark);
+  }
+  .toast-message {
+  background: var(--accent);
+  color: var(--dark);
+  padding: 12px 20px;
+  margin-top: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  opacity: 0.95;
+  animation: fadeinout 4s forwards;
+  font-weight: 600;
+  user-select: none;
+}
+@keyframes fadeinout {
+  0% {opacity: 0; transform: translateY(20px);}
+  10% {opacity: 0.95; transform: translateY(0);}
+  90% {opacity: 0.95; transform: translateY(0);}
+  100% {opacity: 0; transform: translateY(20px);}
+}
+
+</style>
+</head>
+<body>
+<header>🎓 RPG do Conhecimento - Seu Curso Gamificado</header>
+<main>
+  <section id="character-section">
+    <h2>👤 Personagem</h2>
+    <label>Nome:
+      <input type="text" id="char-name" placeholder="Seu nome" />
+    </label>
+    <div class="stat"><span>Nível:</span> <span id="char-level">1</span></div>
+    <div class="stat"><span>XP:</span> <span id="char-xp">0</span> / <span id="char-xp-next">100</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="xp-bar"></div></div>
+    <div class="stat"><span>Pontos de Habilidade:</span> <span id="skill-points">15</span></div>
+    <h3>Status</h3>
+    <div class="stat"><span>Inteligência:</span> <span id="stat-intelligence">0</span> <button class="stat-plus" data-stat="intelligence">+</button></div>
+    <div class="stat"><span>Sabedoria:</span> <span id="stat-wisdom">0</span> <button class="stat-plus" data-stat="wisdom">+</button></div>
+    <div class="stat"><span>Foco:</span> <span id="stat-focus">0</span> <button class="stat-plus" data-stat="focus">+</button></div>
+    <div class="stat"><span>Criatividade:</span> <span id="stat-creativity">0</span> <button class="stat-plus" data-stat="creativity">+</button></div>
+    <button id="distribute-points-btn">Distribuir Pontos de Habilidade</button>
+    <div class="save-buttons">
+      <button id="export-btn">💾 Exportar Progresso</button>
+      <button id="import-btn">📂 Importar Progresso</button>
+      <input type="file" id="import-file" class="file-input" accept=".json" />
+      <button id="reset-btn" class="reset-btn">🔄 Resetar Progresso</button>
+    </div>
+  </section>
+
+  <section id="course-section">
+    <h2>📚 Roteiro do Curso</h2>
+    <form id="add-course-form">
+      <label>Título da Aula/Módulo:
+        <input type="text" id="course-title" required />
+      </label>
+      <label>Tipo:
+        <select id="course-type" required>
+          <option value="Aula">Aula</option>
+          <option value="Exercício">Exercício</option>
+          <option value="Projeto">Projeto</option>
+          <option value="Revisão">Revisão</option>
+          <option value="Desafio">Desafio</option>
+          <option value="Prova">Prova</option>
+        </select>
+      </label>
+      <label>Dificuldade:
+        <select id="course-difficulty">
+          <option value="Fácil">Fácil</option>
+          <option value="Médio">Médio</option>
+          <option value="Difícil">Difícil</option>
+        </select>
+      </label>
+      <button type="submit">➕ Adicionar ao Roteiro</button>
+    </form>
+    <ul id="course-list"></ul>
+    <button id="generate-quests-btn">🎯 Gerar Quests do Roteiro</button>
+  </section>
+
+  <section id="quests-section">
+    <h2>🎯 Quests Pendentes</h2>
+    <ul id="quests-pending-list"></ul>
+    <h2>✅ Quests Concluídas</h2>
+    <ul id="quests-completed-list"></ul>
+    <form id="add-quest-form">
+      <h3>➕ Adicionar Quest Manualmente</h3>
+      <label>Título da Quest:
+        <input type="text" id="quest-title" required />
+      </label>
+      <label>Descrição:
+        <textarea id="quest-desc" rows="2" required></textarea>
+      </label>
+      <label>XP Recompensa:
+        <input type="number" id="quest-xp" min="1" value="50" required />
+      </label>
+      <label>Pontos de Habilidade Recompensa:
+        <input type="number" id="quest-skill-points" min="0" value="1" required />
+      </label>
+      <button type="submit">➕ Adicionar Quest</button>
+    </form>
+    <div class="progress-bar" style="margin-top:1.5rem;">
+      <div class="progress-fill" id="quests-progress-bar"></div>
+    </div>
+    <div style="text-align:center; margin-top:0.5rem;" id="quests-progress-text"></div>
+  </section>
+
+  <section id="achievements-section">
+    <h2>🏆 Medalhas / Insígnias <button id="admin-mode-btn" style="font-size:0.8rem; margin-left:1rem;">Modo Admin</button></h2>
+    <div id="achievements-list"></div>
+    <div id="admin-panel" style="display:none; margin-top:1rem; background: rgba(22,36,71,0.9); padding:1rem; border-radius:8px;">
+      <h3>Adicionar Medalha / Insígnia</h3>
+      <form id="add-achievement-form">
+        <label>Nome:
+          <input type="text" id="achievement-name" required />
+        </label>
+        <label>Descrição:
+          <textarea id="achievement-desc" rows="2" required></textarea>
+        </label>
+        <label>Requisito (JSON):
+          <textarea id="achievement-req" rows="3" placeholder='Ex: {"questsCompleted":5}' required></textarea>
+        </label>
+        <button type="submit">➕ Adicionar Medalha</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="pomodoro-section">
+    <h2>⏳ Ir para Aventura (Pomodoro)</h2>
+    <label for="focus-time">Tempo de foco (minutos):</label>
+    <input type="number" id="focus-time" min="1" max="120" value="25" />
+    <label for="break-time">Tempo de descanso (minutos):</label>
+    <input type="number" id="break-time" min="1" max="60" value="5" />
+    <div id="pomodoro-timer">00:00</div>
+    <div id="pomodoro-controls">
+      <button id="start-pomodoro-btn">▶️ Iniciar</button>
+      <button id="pause-pomodoro-btn" disabled>⏸ Pausar</button>
+      <button id="reset-pomodoro-btn" disabled>🔄 Resetar</button>
+    </div>
+  </section>
+<div id="toast-container" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  max-width: 300px;
+  z-index: 9999;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+"></div>
+</main>
+
+<div id="xp-popup" class="xp-popup"></div>
+<div id="levelup-popup" class="level-up-popup"></div>
+<div id="achievement-popup" class="achievement-popup"></div>
+<div id="notification" class="notification"></div>
+
+<script>
+    if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("sw.js")
+        .then((registration) => {
+          console.log("ServiceWorker registrado com sucesso:", registration.scope);
+        })
+        .catch((error) => {
+          console.log("Falha ao registrar o ServiceWorker:", error);
+        });
+    });
+  }
+  // Salvar nome do personagem ao carregar
+    const charNameInput = document.getElementById('char-name');
+    charNameInput.addEventListener('input', e => {
+      state.character.name = e.target.value;
+      saveProgress();
+    });
+  (() => {
+  const $ = id => document.getElementById(id);
+
+  // Estado inicial
+  const state = {
+    character: {
+      name: '',
+      level: 1,
+      xp: 0,
+      xpNext: 100,
+      skillPoints: 15,
+      stats: { intelligence: 0, wisdom: 0, focus: 0, creativity: 0 }
+    },
+    course: [],
+    quests: [],
+    achievements: [], // ids resgatados
+    achievementsDef: [
+      { id: "primeira_quest", name: "Primeira Quest", desc: "Complete sua primeira quest.", req: { questsCompleted: 1 } },
+      { id: "aventureiro", name: "Aventureiro", desc: "Complete 5 quests.", req: { questsCompleted: 5 } },
+      { id: "focado", name: "Focado", desc: "Conclua 3 sessões de Pomodoro.", req: { pomodoroSessions: 3 } },
+      { id: "iniciante", name: "Iniciante", desc: "Alcance nível 2.", req: { level: 2 } },
+      { id: "aprendiz", name: "Aprendiz", desc: "Alcance nível 5.", req: { level: 5 } }
+    ],
+    pomodoro: {
+      focusTime: 25 * 60,
+      breakTime: 5 * 60,
+      timer: 0,
+      running: false,
+      onBreak: false,
+      intervalId: null,
+      sessions: 0
+    }
+  };
+  function showToast(message) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast-message';
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => container.removeChild(toast), 500);
+  }, 3800);
+}
+  // Salvar progresso no localStorage
+  function saveProgress() {
+    localStorage.setItem('rpgState', JSON.stringify(state));
+  }
+
+  // Carregar progresso do localStorage
+  function loadProgress() {
+    const saved = localStorage.getItem('rpgState');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        Object.assign(state.character, data.character);
+        state.course = data.course || [];
+        state.quests = data.quests || [];
+        state.achievements = data.achievements || [];
+        Object.assign(state.pomodoro, data.pomodoro || {});
+      } catch {
+        console.warn('Falha ao carregar progresso.');
+      }
+    }
+  }
+
+  // Atualiza a interface
+  function updateUI() {
+  // Personagem
+  $('char-name').value = state.character.name;
+  $('char-level').textContent = state.character.level;
+  $('char-xp').textContent = state.character.xp;
+  $('char-xp-next').textContent = state.character.xpNext;
+  $('skill-points').textContent = state.character.skillPoints;
+  ['intelligence', 'wisdom', 'focus', 'creativity'].forEach(stat => {
+    $(`stat-${stat}`).textContent = state.character.stats[stat];
+  });
+  // Mostrar ou esconder botões "+" conforme pontos disponíveis
+  const hasPoints = state.character.skillPoints > 0;
+  document.querySelectorAll('.stat-plus').forEach(btn => {
+    btn.style.display = hasPoints ? 'flex' : 'none';
+  });
+
+    // Barra XP
+    const xpPercent = Math.min(100, (state.character.xp / state.character.xpNext) * 100);
+    $('xp-bar').style.width = xpPercent + '%';
+
+    // Cursos
+    const courseList = $('course-list');
+    courseList.innerHTML = '';
+    state.course.forEach((c, i) => {
+      const li = document.createElement('li');
+      li.textContent = `${c.title} [${c.type} - ${c.difficulty}]`;
+      const btn = document.createElement('button');
+      btn.textContent = '❌';
+      btn.className = 'small-btn';
+      btn.title = 'Remover curso';
+      btn.onclick = () => {
+        if (confirm(`Remover curso "${c.title}"?`)) {
+          state.course.splice(i, 1);
+          saveProgress();
+          updateUI();
+        }
+      };
+      li.appendChild(btn);
+      courseList.appendChild(li);
+    });
+
+    // Quests pendentes e concluídas
+    const pendingList = $('quests-pending-list');
+    const completedList = $('quests-completed-list');
+    pendingList.innerHTML = '';
+    completedList.innerHTML = '';
+    let completedCount = 0;
+
+    state.quests.forEach((q, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<div><strong>${q.title}</strong><br>${q.desc}<br>XP: ${q.xp} | SP: ${q.skillPoints}</div>`;
+      if (q.done) {
+        li.classList.add('completed');
+        completedList.appendChild(li);
+        completedCount++;
+      } else {
+        const btn = document.createElement('button');
+        btn.textContent = 'Concluir';
+        btn.className = 'small-btn';
+        btn.onclick = () => {
+          q.done = true;
+          gainXP(q.xp, q.skillPoints);
+          checkAchievements();
+          saveProgress();
+          updateUI();
+        };
+        li.appendChild(btn);
+        pendingList.appendChild(li);
+      }
+    });
+
+    // Barra progresso quests
+    const total = state.quests.length || 1;
+    const percent = Math.min(100, (completedCount / total) * 100);
+    $('quests-progress-bar').style.width = percent + '%';
+    $('quests-progress-text').textContent = `${completedCount}/${total} quests concluídas`;
+
+    // Medalhas / Insígnias
+    const achList = $('achievements-list');
+    achList.innerHTML = '';
+    state.achievementsDef.forEach(a => {
+      const li = document.createElement('div');
+      li.className = 'achievement-item';
+      if (state.achievements.includes(a.id)) li.classList.add('completed');
+      li.innerHTML = `<div class="achievement-desc"><strong>${a.name}</strong><br>${a.desc}</div>`;
+      if (!state.achievements.includes(a.id)) {
+        const btn = document.createElement('button');
+        btn.textContent = '+ Resgatar';
+        btn.className = 'achievement-rescue-btn';
+        btn.onclick = () => {
+         if (checkAchievementReq(a.req)) {
+            if (!state.achievements.includes(a.id)) {
+                state.achievements.push(a.id);
+                showToast(`🏆 Medalha "${a.name}" resgatada!`);
+                saveProgress();
+                updateUI();
+        }       
+            } else {
+                 showToast('Você ainda não cumpriu os requisitos para essa medalha.');
+  }
+};
+        li.appendChild(btn);
+      }
+      achList.appendChild(li);
+    });
+
+    // Pomodoro timer
+    updatePomodoroUI();
+  }
+
+  // Ganhar XP e skill points, subir nível se necessário
+  function gainXP(xp, sp) {
+    state.character.xp += xp;
+    state.character.skillPoints += sp;
+    while (state.character.xp >= state.character.xpNext) {
+      state.character.xp -= state.character.xpNext;
+      state.character.level++;
+      state.character.skillPoints++;
+      state.character.xpNext = Math.floor(state.character.xpNext * 1.2);
+      showToast(`🎉 Parabéns! Você subiu para o nível ${state.character.level}!`);
+    }
+  }
+
+  // Verifica se requisitos da medalha são cumpridos
+  function checkAchievementReq(req) {
+    if (!req) return true;
+    if (req.questsCompleted) {
+      const doneCount = state.quests.filter(q => q.done).length;
+      if (doneCount < req.questsCompleted) return false;
+    }
+    if (req.level) {
+      if (state.character.level < req.level) return false;
+    }
+    if (req.pomodoroSessions) {
+      if (state.pomodoro.sessions < req.pomodoroSessions) return false;
+    }
+    return true;
+  }
+
+  // Verifica e resgata medalhas automaticamente
+  function checkAchievements() {
+    state.achievementsDef.forEach(a => {
+      if (!state.achievements.includes(a.id) && checkAchievementReq(a.req)) {
+        state.achievements.push(a.id);
+        showToast(`🏆 Medalha "${a.name}" conquistada automaticamente!`);
+      }
+    });
+  }
+
+  // Distribuir pontos manualmente via botões +
+  document.querySelectorAll('.stat-plus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (state.character.skillPoints <= 0) {
+        showToast('Você não tem pontos de habilidade para distribuir.');
+        return;
+      }
+      const stat = btn.dataset.stat;
+      if (stat && state.character.stats.hasOwnProperty(stat)) {
+        state.character.stats[stat]++;
+        state.character.skillPoints--;
+        saveProgress();
+        updateUI();
+      }
+    });
+  });
+
+  // Distribuir pontos automaticamente (exemplo simples)
+  $('distribute-points-btn').addEventListener('click', () => {
+    if (state.character.skillPoints < 4) {
+      showToast('Você precisa de pelo menos 4 pontos para distribuir automaticamente.');
+      return;
+    }
+    ['intelligence', 'wisdom', 'focus', 'creativity'].forEach(stat => {
+      state.character.stats[stat]++;
+    });
+    state.character.skillPoints -= 4;
+    saveProgress();
+    updateUI();
+  });
+
+  // Adicionar curso com bloqueio de duplicatas
+  $('add-course-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const title = $('course-title').value.trim();
+    const type = $('course-type').value;
+    const difficulty = $('course-difficulty').value;
+    if (!title) return showToast('Título do curso é obrigatório.');
+    // Verifica duplicata
+    const exists = state.course.some(c => c.title.toLowerCase() === title.toLowerCase() && c.type === type && c.difficulty === difficulty);
+    if (exists) return showToast('Curso duplicado não permitido.');
+    state.course.push({ title, type, difficulty });
+    saveProgress();
+    updateUI();
+    e.target.reset();
+  });
+
+  // Gerar quests a partir do curso
+  $('generate-quests-btn').addEventListener('click', () => {
+    if (state.course.length === 0) return showToast('Adicione cursos antes de gerar quests.');
+    // Exemplo: para cada curso gera uma quest simples
+    state.course.forEach(c => {
+      // Evita quests duplicadas pelo título
+      if (!state.quests.some(q => q.title === c.title)) {
+        state.quests.push({
+          title: c.title,
+          desc: `Complete o módulo: ${c.title} (${c.type}, ${c.difficulty})`,
+          xp: 50,
+          skillPoints: 1,
+          done: false
+        });
+      }
+    });
+    saveProgress();
+    updateUI();
+    showToast('Quests geradas a partir do roteiro do curso!');
+  });
+
+  // Adicionar quest manualmente
+  $('add-quest-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const title = $('quest-title').value.trim();
+    const desc = $('quest-desc').value.trim();
+    const xp = parseInt($('quest-xp').value);
+    const sp = parseInt($('quest-skill-points').value);
+    if (!title || !desc || isNaN(xp) || isNaN(sp)) return showToast('Preencha todos os campos corretamente.');
+    // Evita quests duplicadas pelo título
+    if (state.quests.some(q => q.title.toLowerCase() === title.toLowerCase())) return showToast('Quest duplicada não permitida.');
+    state.quests.push({ title, desc, xp, skillPoints: sp, done: false });
+    saveProgress();
+    updateUI();
+    e.target.reset();
+  });
+
+  // Exportar progresso
+  $('export-btn').addEventListener('click', () => {
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'progresso-rpg.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Importar progresso via input oculto
+  $('import-btn').addEventListener('click', () => {
+    const input = $('import-file');
+    input.value = '';
+    input.click();
+  });
+  $('import-file').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.character || !data.quests || !data.course) throw new Error('Arquivo inválido');
+        Object.assign(state.character, data.character);
+        state.course = data.course;
+        state.quests = data.quests;
+        state.achievements = data.achievements || [];
+        Object.assign(state.pomodoro, data.pomodoro || {});
+        saveProgress();
+        updateUI();
+        showToast('Progresso importado com sucesso!');
+      } catch {
+        showToast('Arquivo inválido ou corrompido.');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // Resetar progresso
+  $('reset-btn').addEventListener('click', () => {
+    if (confirm('Deseja realmente resetar todo o progresso?')) {
+      localStorage.removeItem('rpgState');
+      location.reload();
+    }
+  });
+
+  // Atualizar nome personagem ao digitar
+  $('char-name').addEventListener('input', e => {
+    state.character.name = e.target.value;
+    saveProgress();
+  });
+
+  // Modo Admin para adicionar medalhas
+  const adminPanel = $('admin-panel');
+  $('admin-mode-btn').addEventListener('click', () => {
+    const pwd = prompt('Senha do Modo Admin:');
+    if (pwd === 'AdminExtreme') {
+      adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+    } else {
+      showToast('Senha incorreta!');
+    }
+  });
+
+  // Adicionar medalha via admin
+  $('add-achievement-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('achievement-name').value.trim();
+    const desc = $('achievement-desc').value.trim();
+    const reqText = $('achievement-req').value.trim();
+    if (!name || !desc || !reqText) return showToast('Preencha todos os campos.');
+    let req;
+    try {
+      req = JSON.parse(reqText);
+    } catch {
+      return showToast('Requisito deve ser um JSON válido.');
+    }
+    const id = name.toLowerCase().replace(/\s+/g, '_');
+    if (state.achievementsDef.some(a => a.id === id)) return showToast('Medalha com esse nome já existe.');
+    state.achievementsDef.push({ id, name, desc, req });
+    saveProgress();
+    updateUI();
+    e.target.reset();
+    showToast('Medalha adicionada com sucesso!');
+  });
+
+// Pomodoro
+const pomodoro = state.pomodoro;
+const timerEl = $('pomodoro-timer');
+const startBtn = $('start-pomodoro-btn');
+const pauseBtn = $('pause-pomodoro-btn');
+const resetBtn = $('reset-pomodoro-btn');
+const focusInput = $('focus-time');
+const breakInput = $('break-time');
+
+function formatTime(s) {
+  const m = Math.floor(s / 60).toString().padStart(2, '0');
+  const sec = (s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+function updatePomodoroUI() {
+  timerEl.textContent = formatTime(pomodoro.timer);
+  timerEl.classList.toggle('break', pomodoro.onBreak);
+  startBtn.disabled = pomodoro.running;
+  pauseBtn.disabled = !pomodoro.running;
+  resetBtn.disabled = !pomodoro.running && pomodoro.timer === 0;
+}
+
+function pomodoroTick() {
+  if (pomodoro.timer > 0) {
+    pomodoro.timer--;
+    updatePomodoroUI();
+  } else {
+    if (pomodoro.onBreak) {
+      pomodoro.onBreak = false;
+      pomodoro.timer = pomodoro.focusTime;
+      showToast('⏰ Fim do descanso! Hora de focar.');
+    } else {
+      pomodoro.onBreak = true;
+      pomodoro.timer = pomodoro.breakTime;
+      pomodoro.sessions++;
+      showToast('⏰ Fim do foco! Hora do descanso.');
+      checkAchievements();
+    }
+    updatePomodoroUI();
+  }
+}
+
+startBtn.addEventListener('click', () => {
+  if (pomodoro.running) return;
+  pomodoro.focusTime = Math.max(1, parseInt(focusInput.value)) * 60;
+  pomodoro.breakTime = Math.max(1, parseInt(breakInput.value)) * 60;
+  // Alteração aqui: só resetar timer se estiver zerado
+  if (!pomodoro.onBreak && pomodoro.timer === 0) {
+    pomodoro.timer = pomodoro.focusTime;
+  }
+  pomodoro.running = true;
+  pomodoro.intervalId = setInterval(pomodoroTick, 1000);
+  updatePomodoroUI();
+});
+
+pauseBtn.addEventListener('click', () => {
+  if (!pomodoro.running) return;
+  pomodoro.running = false;
+  clearInterval(pomodoro.intervalId);
+  updatePomodoroUI();
+});
+
+resetBtn.addEventListener('click', () => {
+  pomodoro.running = false;
+  clearInterval(pomodoro.intervalId);
+  pomodoro.onBreak = false;
+  pomodoro.timer = 0;
+  pomodoro.sessions = 0;
+  updatePomodoroUI();
+});
+  // Inicialização
+  loadProgress();
+  updateUI();
+})();
+</script>
