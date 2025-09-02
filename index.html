@@ -198,16 +198,16 @@ select option {
     margin: 1rem 0;
   }
   li {
-    background: rgba(31, 42, 72, 0.8);
-    margin-bottom: 0.7rem;
-    padding: 0.8rem;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.3s ease;
-    border-left: 4px solid var(--accent);
-  }
+  background: rgba(31, 42, 72, 0.8);
+  margin-bottom: 0.7rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;   /* 👈 força texto em cima e botão embaixo */
+  align-items: flex-start;  /* mantém alinhado à esquerda */
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--accent);
+}
   li:hover {
     transform: translateX(5px);
     background: rgba(31, 42, 72, 1);
@@ -321,6 +321,12 @@ select option {
   90% {opacity: 0.95; transform: translateY(0);}
   100% {opacity: 0; transform: translateY(20px);}
 }
+li button.small-btn,
+.achievement-item .achievement-rescue-btn {
+  margin-top: 0.7rem;
+  align-self: flex-start;  /* garante que fique à esquerda */
+}
+
 @media (max-width: 768px) {
   main {
     flex-direction: column;
@@ -624,7 +630,7 @@ select option {
       const li = document.createElement('li');
       li.textContent = `${c.title} [${c.type} - ${c.difficulty}]`;
       const btn = document.createElement('button');
-      btn.textContent = '❌';
+      btn.textContent = 'Remover';
       btn.className = 'small-btn';
       btn.title = 'Remover curso';
       btn.onclick = () => {
@@ -638,70 +644,86 @@ select option {
       courseList.appendChild(li);
     });
 
-    // Quests pendentes e concluídas
-    const pendingList = $('quests-pending-list');
-    const completedList = $('quests-completed-list');
-    pendingList.innerHTML = '';
-    completedList.innerHTML = '';
-    let completedCount = 0;
+   // Quests pendentes e concluídas
+const pendingList = $('quests-pending-list');
+const completedList = $('quests-completed-list');
+pendingList.innerHTML = '';
+completedList.innerHTML = '';
+let completedCount = 0;
 
-    state.quests.forEach((q, i) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<div><strong>${q.title}</strong><br>${q.desc}<br>XP: ${q.xp} | SP: ${q.skillPoints}</div>`;
-      if (q.done) {
-        li.classList.add('completed');
-        completedList.appendChild(li);
-        completedCount++;
-      } else {
-        const btn = document.createElement('button');
-        btn.textContent = 'Concluir';
-        btn.className = 'small-btn';
-        btn.onclick = () => {
-          q.done = true;
-          gainXP(q.xp, q.skillPoints);
-          checkAchievements();
-          saveProgress();
-          updateUI();
-        };
-        li.appendChild(btn);
-        pendingList.appendChild(li);
-      }
-    });
+state.quests.forEach((q, i) => {
+  const li = document.createElement('li');
+  li.innerHTML = `<div><strong>${q.title}</strong><br>${q.desc}<br>XP: ${q.xp} | SP: ${q.skillPoints}</div>`;
 
-    // Barra progresso quests
-    const total = state.quests.length || 1;
-    const percent = Math.min(100, (completedCount / total) * 100);
-    $('quests-progress-bar').style.width = percent + '%';
-    $('quests-progress-text').textContent = `${completedCount}/${total} quests concluídas`;
-
-    // Medalhas / Insígnias
-    const achList = $('achievements-list');
-    achList.innerHTML = '';
-    state.achievementsDef.forEach(a => {
-      const li = document.createElement('div');
-      li.className = 'achievement-item';
-      if (state.achievements.includes(a.id)) li.classList.add('completed');
-      li.innerHTML = `<div class="achievement-desc"><strong>${a.name}</strong><br>${a.desc}</div>`;
-      if (!state.achievements.includes(a.id)) {
-        const btn = document.createElement('button');
-        btn.textContent = '+ Resgatar';
-        btn.className = 'achievement-rescue-btn';
-        btn.onclick = () => {
-         if (checkAchievementReq(a.req)) {
-            if (!state.achievements.includes(a.id)) {
-                state.achievements.push(a.id);
-                showToast(`🏆 Medalha "${a.name}" resgatada!`);
-                saveProgress();
-                updateUI();
-        }       
-            } else {
-                 showToast('Você ainda não cumpriu os requisitos para essa medalha.');
+  if (!q.done) {
+    // ⏳ Quest ainda não concluída → botão "Concluir"
+    const btn = document.createElement('button');
+    btn.textContent = 'Concluir';
+    btn.className = 'small-btn';
+    btn.onclick = () => {
+      q.done = true;
+      saveProgress();
+      updateUI();
+    };
+    li.appendChild(btn);
+    pendingList.appendChild(li);
   }
-};
-        li.appendChild(btn);
-      }
-      achList.appendChild(li);
-    });
+  else if (q.done && !q.claimed) {
+    // ✅ Quest concluída mas não resgatada → botão "Resgatar"
+    const btn = document.createElement('button');
+    btn.textContent = 'Resgatar';
+    btn.className = 'small-btn';
+    btn.onclick = () => {
+      q.claimed = true;
+      gainXP(q.xp, q.skillPoints);
+      checkAchievements();
+      saveProgress();
+      updateUI();
+    };
+    li.appendChild(btn);
+    completedList.appendChild(li);
+    completedCount++;
+  }
+  else if (q.done && q.claimed) {
+    // 🏆 Quest concluída e já resgatada
+    li.classList.add('completed');
+    completedList.appendChild(li);
+    completedCount++;
+  }
+});
+
+// Barra progresso quests
+const total = state.quests.length || 1;
+const percent = Math.min(100, (completedCount / total) * 100);
+$('quests-progress-bar').style.width = percent + '%';
+$('quests-progress-text').textContent = `${completedCount}/${total} quests concluídas`;
+
+// Medalhas / Insígnias
+const achList = $('achievements-list');
+achList.innerHTML = '';
+state.achievementsDef.forEach(a => {
+  const li = document.createElement('div');
+  li.className = 'achievement-item';
+  if (state.achievements.includes(a.id)) li.classList.add('completed');
+  li.innerHTML = `<div class="achievement-desc"><strong>${a.name}</strong><br>${a.desc}</div>`;
+
+  // ✅ Só mostra botão se os requisitos foram cumpridos e a medalha ainda não foi resgatada
+  if (!state.achievements.includes(a.id) && checkAchievementReq(a.req)) {
+    const btn = document.createElement('button');
+    btn.textContent = '+ Resgatar';
+    btn.className = 'achievement-rescue-btn';
+    btn.onclick = () => {
+      state.achievements.push(a.id);
+      showToast(`🏆 Medalha "${a.name}" resgatada!`);
+      saveProgress();
+      updateUI();
+    };
+    li.appendChild(btn);
+  }
+
+  achList.appendChild(li);
+});
+
 
     // Pomodoro timer
     updatePomodoroUI();
