@@ -19,96 +19,104 @@
     --danger: #b22222;
     --break: #00cc66;
   }
+  * {
+  box-sizing: border-box;
+}
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: var(--light);
-    margin: 0; padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--light);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* evita barra lateral horizontal */
+}
   header {
-    background: var(--dark);
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    color: #f0f0f0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  }
+  background: var(--dark);
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #f0f0f0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
   main {
-    flex: 1;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1rem;
-    max-width: 1400px;
-    margin: auto;
-  }
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;           /* mais espaço entre seções */
+  padding: 2rem;       /* mais respiro lateral */
+  max-width: 1200px;   /* centraliza o conteúdo */
+  margin: 0 auto;
+}
   section {
-    background: rgba(22, 36, 71, 0.85);
-    border-radius: 12px;
-    padding: 1.5rem;
-    flex: 1 1 350px;
-    min-width: 300px;
-    box-shadow: 0 0 15px rgba(15, 26, 58, 0.5);
-    backdrop-filter: blur(10px);
-  }
+  background: rgba(22, 36, 71, 0.85);
+  border-radius: 12px;
+  padding: 2rem;       /* mais espaço interno */
+  flex: 1 1 350px;
+  min-width: 300px;
+  box-shadow: 0 0 15px rgba(15, 26, 58, 0.5);
+  backdrop-filter: blur(10px);
+}
   h2 {
-    margin-top: 0;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 0.5rem;
-    color: var(--accent);
-    font-size: 1.5rem;
-  }
+  margin-top: 0;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.5rem;
+  color: var(--accent);
+  font-size: 1.5rem;
+}
   label {
-    display: block;
-    margin-top: 0.8rem;
-    font-weight: 500;
-  }
-  input[type="text"], input[type="number"], select, textarea {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.3rem;
-    border-radius: 6px;
-    border: 2px solid rgba(78, 204, 163, 0.3);
-    font-size: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--light);
-  }
-  input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
-    border-color: var(--accent);
-    outline: none;
-  }
-  select option {
-    background: var(--dark);
-    color: var(--light);
-  }
+  display: block;
+  margin-top: 0.8rem;
+  font-weight: 500;
+}
+  input[type="text"], input[type="number"], select, textarea, button {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.8rem;           /* aumenta conforto */
+  margin-top: 0.5rem;
+  margin-bottom: 0.8rem;
+  border-radius: 6px;
+  border: 2px solid rgba(78, 204, 163, 0.3);
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--light);
+}
+  
+input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+  
+select option {
+  background: var(--dark);
+  color: var(--light);
+}
+
   button {
-    margin-top: 1rem;
-    background: var(--accent);
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 8px;
-    font-weight: bold;
-    color: var(--dark);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-  }
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
   button:hover {
-    background: #3ba87f;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
+  background: #3ba87f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
   button:disabled {
-    background: #666;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
+  background: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
   .stat {
     display: flex;
     justify-content: space-between;
@@ -141,6 +149,13 @@
     background: var(--accent);
     color: var(--dark);
   }
+  .admin-btn {
+  max-width: 100%;        /* nunca passa da largura do container */
+  white-space: normal;    /* permite quebrar linha se necessário */
+  overflow-wrap: break-word; /* quebra palavras grandes */
+  text-align: center;     /* centraliza texto */
+  padding: 0.6rem 1rem;   /* ajuste de espaço */
+}
   .progress-bar {
     background: rgba(15, 26, 58, 0.5);
     border-radius: 20px;
@@ -306,7 +321,64 @@
   90% {opacity: 0.95; transform: translateY(0);}
   100% {opacity: 0; transform: translateY(20px);}
 }
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+    padding: 1rem;  /* menos padding para telas menores */
+    gap: 1.5rem;
+  }
 
+  section {
+    flex: 1 1 100%;
+    min-width: unset;
+    padding: 1.5rem;
+  }
+
+  header {
+    font-size: 1.4rem;
+    padding: 0.8rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  button, input, select, textarea {
+    font-size: 0.95rem;
+  }
+
+  ul {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  .stat {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-plus {
+    margin-top: 0.4rem;
+  }
+
+  section {
+    padding: 1rem; /* reduz padding para caber melhor em telas muito pequenas */
+  }
+  .admin-btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.8rem;
+  }
+}
 </style>
 </head>
 <body>
@@ -392,7 +464,7 @@
   </section>
 
   <section id="achievements-section">
-    <h2>🏆 Medalhas / Insígnias <button id="admin-mode-btn" style="font-size:0.8rem; margin-left:1rem;">Modo Admin</button></h2>
+    <h2>🏆 Medalhas / Insígnias <button id="admin-mode-btn" class="admin-btn">Modo Admin</button></h2>
     <div id="achievements-list"></div>
     <div id="admin-panel" style="display:none; margin-top:1rem; background: rgba(22,36,71,0.9); padding:1rem; border-radius:8px;">
       <h3>Adicionar Medalha / Insígnia</h3>
